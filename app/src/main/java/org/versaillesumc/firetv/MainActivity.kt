@@ -1,6 +1,8 @@
 package org.versaillesumc.firetv
 
 import android.content.Intent
+import android.app.AlertDialog
+import android.widget.ProgressBar
 import android.graphics.Color
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -29,9 +31,9 @@ class MainActivity : FragmentActivity() {
     private val firstCards = mutableListOf<View>()
 
     private val sections = listOf(
-        TvSection("Live Worship", listOf(TvCard("Watch Live", "Join worship wherever you are"), TvCard("Next Worship", "Upcoming worship schedule"))),
+        TvSection("Live Worship", listOf(TvCard("Watch Live", "Live stream and next service countdown"))),
         TvSection("Latest Streams", listOf(TvCard("Traditional Worship", "Most recent service"), TvCard("Contemporary Worship", "Most recent service"))),
-        TvSection("Sermon Series", listOf(TvCard("Current Series", "Watch the latest messages"))),
+        TvSection("Sermon Series", listOf(TvCard("Browse Sermons", "Watch messages from our R2 library"))),
         TvSection("Partner With Us", listOf(TvCard("Diaper Bank", "Serving families"), TvCard("Blessing Box", "Sharing essentials"), TvCard("Backpack Buddies", "Supporting students"), TvCard("Third Monday Meal", "Gathering around the table"))),
         TvSection("Connect With Us", listOf(TvCard("Church Center", "Stay connected"), TvCard("Giving", "Support local ministry"), TvCard("About Us", "Get to know Versailles UMC")))
     )
@@ -156,7 +158,7 @@ class MainActivity : FragmentActivity() {
                         elevation = dp(if (focused) 9 else 2).toFloat()
                     }
                     setOnClickListener {
-                        Toast.makeText(this@MainActivity, "${card.title}: coming soon", Toast.LENGTH_SHORT).show()
+                        openCard(card.title)
                     }
                     setOnKeyListener { _, keyCode, event ->
                         if (event.action == KeyEvent.ACTION_DOWN &&
@@ -184,6 +186,48 @@ class MainActivity : FragmentActivity() {
         firstCards[index].requestFocus()
         val target = firstCards[index]
         content.post { content.smoothScrollTo(0, (target.parent.parent as View).top.coerceAtLeast(0)) }
+    }
+
+
+    private fun play(url:String) {
+        if(!url.startsWith("https://")) { message("This recording is not available.");return }
+        startActivity(Intent(this,PlayerActivity::class.java).putExtra("url",url))
+    }
+    private fun message(value:String) {
+        AlertDialog.Builder(this).setTitle("Versailles UMC").setMessage(value).setPositiveButton("OK",null).show()
+    }
+    private fun loading(title:String, task:()->Unit) {
+        task()
+    }
+    private fun openCard(title:String) {
+        when(title) {
+            "Watch Live" -> VumcServices.request({VumcServices.live()}) { r->
+                r.onSuccess { state ->
+                    if(state.url!=null) play(state.url)
+                    else {
+                        val next=if(state.nextName.isNotBlank()) "\n\nNext: ${state.nextName}\n${state.nextTime}" else "\n\nNext worship schedule is temporarily unavailable."
+                        message("Worship is currently off air."+next)
+                    }
+                }.onFailure { message("Unable to check the live stream. Please try again.") }
+            }
+            "Traditional Worship","Contemporary Worship" -> VumcServices.request({VumcServices.latest()}) { r->
+                r.onSuccess { videos->
+                    val video=videos.firstOrNull { it.title==title }
+                    if(video==null) message("The latest recording is temporarily unavailable.") else play(video.url)
+                }.onFailure { message("Unable to retrieve the latest services.") }
+            }
+            "Browse Sermons" -> VumcServices.request({VumcServices.sermons()}) { r->
+                r.onSuccess { videos->
+                    if(videos.isEmpty()) {message("No sermon recordings are available.");return@onSuccess}
+                    val names=videos.take(100).map { it.title }.toTypedArray()
+                    AlertDialog.Builder(this).setTitle("Sermon Series • Recordings")
+                        .setItems(names) { _,which->play(videos[which].url) }
+                        .setNegativeButton("Back",null).show()
+                }.onFailure { message("Unable to load the sermon catalog.") }
+            }
+            "About Us" -> message("Versailles United Methodist Church\n230 Paynes Mill Road, Versailles, KY 40383\n\nA Church Striving to Love Like Jesus\n\nversaillesumc.org")
+            else -> message("The ${title} information screen is being connected to the existing Roku artwork.")
+        }
     }
 
     override fun onBackPressed() {
