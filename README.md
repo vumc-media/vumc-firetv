@@ -1,22 +1,11 @@
-# Versailles UMC Fire TV — Starter v0.1
+# Versailles UMC Fire TV — v0.2 UI test
 
-Native Android TV / Amazon Fire TV starter project. The Roku repository is separate and untouched.
+This branch updates the Leanback home screen with spacious cards, clearer text, rounded navy-blue surfaces and subtle focus scaling. Navigation and unconfigured-source behavior remain intact. No Roku code is modified.
 
-## Included
-- Fire TV launcher intent and D-pad-friendly Leanback menu
-- Live Worship, Latest Streams, Sermon Series, Partner With Us, Connect With Us sections
-- Media3/ExoPlayer HLS-capable player activity
-- Unconfigured sources are explicitly placeholders, not working playback URLs
+## Test on Android Studio
+1. Check out branch `firetv-v0.2-ui` (or download that branch as a ZIP and extract it).
+2. Open the extracted project folder, not the ZIP.
+3. Sync Gradle, select the Android TV emulator and Run `app`.
+4. Verify D-pad navigation, focus animation, click placeholders and Back behavior.
 
-## Build
-Open in Android Studio with JDK 17 and Android SDK 35. Sync Gradle and run on a Fire TV device using ADB. This is source code, **not** a compiled or tested APK.
-
-## Next steps
-1. Inspect Roku catalog and Cloudflare Worker endpoints.
-2. Wire public live HLS and status checks with an off-air fallback.
-3. Integrate R2 video catalog and image thumbnails.
-4. Obtain Planning Center schedule via server-side Worker (never put secrets in the APK).
-5. Add VUMC graphics, TV banner/icon and QR screens.
-6. Build, test and sign for Amazon Appstore.
-
-Do not embed Cloudflare API tokens, PCO credentials or private R2 keys in the app.
+This branch is source code, not a tested APK. Streaming, catalog, Planning Center, artwork and QR links are not yet connected. Do not embed private tokens or credentials.
