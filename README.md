@@ -1,11 +1,16 @@
-# Versailles UMC Fire TV — v0.2 UI test
+# Versailles UMC Fire TV — v0.3 layout rebuild
 
-This branch updates the Leanback home screen with spacious cards, clearer text, rounded navy-blue surfaces and subtle focus scaling. Navigation and unconfigured-source behavior remain intact. No Roku code is modified.
+This branch replaces the Leanback BrowseSupportFragment home screen with a custom two-column Android TV interface.
 
-## Test on Android Studio
-1. Check out branch `firetv-v0.2-ui` (or download that branch as a ZIP and extract it).
-2. Open the extracted project folder, not the ZIP.
-3. Sync Gradle, select the Android TV emulator and Run `app`.
-4. Verify D-pad navigation, focus animation, click placeholders and Back behavior.
+- Fixed 188dp left navigation that never overlays content
+- Independent right content area and scrollable rows
+- 24dp gaps between cards
+- Larger section headings and branded welcome header
+- D-pad focus animation and placeholder click feedback
+- Left from the first card returns to its corresponding menu item
+- Back returns focus to the sidebar
 
-This branch is source code, not a tested APK. Streaming, catalog, Planning Center, artwork and QR links are not yet connected. Do not embed private tokens or credentials.
+## Testing
+Download this branch as a ZIP, extract it, and open the extracted project folder in Android Studio. Sync and Run on the Television (1080p) emulator.
+
+This code has been committed but has **not** been compiled or emulator-tested by the assistant. Report compiler errors or screenshots before merging. Live streaming, catalog, imagery, and schedule remain unconfigured. Do not embed API secrets.
