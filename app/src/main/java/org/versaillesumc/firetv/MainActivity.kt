@@ -37,7 +37,7 @@ class HomeFragment : BrowseSupportFragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         title = "Versailles UMC"
-        headersState = HEADERS_ENABLED
+        headersState = HEADERS_HIDDEN
         isHeadersTransitionOnBackEnabled = true
         brandColor = Color.rgb(14, 29, 52)
         searchAffordanceColor = Color.rgb(69, 143, 201)
@@ -104,7 +104,9 @@ class MinistryCardPresenter : Presenter() {
         val container = LinearLayout(parent.context).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_VERTICAL
-            layoutParams = ViewGroup.LayoutParams(dp(parent, 310), dp(parent, 170))
+            layoutParams = ViewGroup.MarginLayoutParams(dp(parent, 310), dp(parent, 170)).apply {
+                setMargins(dp(parent, 12), dp(parent, 10), dp(parent, 12), dp(parent, 14))
+            }
             setPadding(dp(parent, 22), dp(parent, 18), dp(parent, 22), dp(parent, 18))
             isFocusable = true
             isFocusableInTouchMode = true
